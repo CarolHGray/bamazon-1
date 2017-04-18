@@ -1,4 +1,5 @@
 //=================================Setup Required Variables===============================
+
 var Table = require('cli-table');
 var mysql = require('mysql');
 var inquirer = require('inquirer');
@@ -58,36 +59,21 @@ function inventory() {
     // table is an Array, so you can `push`, `unshift`, `splice` and friends
     function listInventory() {
 
-        //create variable arrays for database data
-
-        var itemId = [],
-            productName = [],
-            departmentName = [],
-            price = [],
-            stockQuantity = [];
-
         //Variable creation from DB connection
 
         connection.query("SELECT * FROM products", function(err, res) {
             for (var i = 0; i < res.length; i++) {
 
-                var resItemId = res[i].item_id,
-                    resProductName = res[i].product_name,
-                    resDepartmentName = res[i].department_name,
-                    resPrice = res[i].price,
-                    resStockQuantity = res[i].stock_quantity;
+                var itemId = res[i].item_id,
+                    productName = res[i].product_name,
+                    departmentName = res[i].department_name,
+                    price = res[i].price,
+                    stockQuantity = res[i].stock_quantity;
 
-                itemId.push(resItemId);
-                productName.push(resProductName);
-                departmentName.push(resDepartmentName);
-                price.push(resPrice);
-                stockQuantity.push(resStockQuantity);
-
-            }
-
-            table.push(
-                [itemId, productName, departmentName, price, stockQuantity]
+              table.push(
+                  [itemId, productName, departmentName, price, stockQuantity]
             );
+          }
             console.log(table.toString());
             continuePrompt();
         });
