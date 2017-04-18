@@ -62,6 +62,7 @@ function inventory() {
 
         connection.query("SELECT * FROM products", function(err, res) {
             for (var i = 0; i < res.length; i++) {
+
                 var itemId = res[i].item_id;
                 var productName = res[i].product_name;
                 var departmentName = res[i].department_name;
@@ -73,36 +74,37 @@ function inventory() {
                 );
                 console.log(table.toString());
             }
-            confirmBuyPrompt();
+            continuePrompt();
         });
     }
 }
 
-//=================================Inquirer confirm purchase===============================
+//=================================Inquirer user purchase===============================
 
-  function confirmBuyPrompt() {
+  function continuePrompt() {
 
       inquirer.prompt([{
 
           type: "confirm",
-          name: "confirmBuy",
+          name: "continue",
           message: "Would you like to purchase an item?",
           default: true
 
       }]).then(function(user) {
-          if (user.confirmBuy === true) {
-              purchasePrompt();
+          if (user.continue === true) {
+              selectionPrompt();
           } else {
               console.log("Thank you! Come back soon!");
           }
       });
   }
 
-  //=================================Inquirer choices===============================
+  //=================================Item selection and Quantity desired===============================
 
-    function purchasePrompt() {
+    function selectionPrompt() {
 
         inquirer.prompt([{
+
             type: "input",
             name: "inputId",
             message: "Please enter the ID number of the item you would like to purchase.",
@@ -111,16 +113,74 @@ function inventory() {
             type: "input",
             name: "inputNumber",
             message: "How many units of this item would you like to purchase?",
-        }]).then(function(user) {
 
-          //connect to database and replace search query with ID number input by user
+        }]).then(function(userPurchase) {
 
-          //list item information for user
+          //connect to database to find stock_quantity in database. If user quantity input is greater than stock, decline purchase.
 
-          //subtract the unit amount input by user from the table stock quantity
+          connection.query("SELECT * FROM products WHERE item_id=?", userPurchase.inputId, function(err, res) {
+            for (var i = 0; i < res.length; i++) {
 
-          //check if the stock quantity is greater than 0 with user quantity deleted...
-              //if not greater than 0, console log "not enough quantity in stock"
-              //if greater than 0, console log "order success", and update database with new stock quantity
+              if(userPurchase.inputNumber > res[i].stock_quantity){
+
+                console.log("===================================================");
+                console.log("Sorry! Not enough in stock. Please try again later.");
+                console.log("===================================================");
+                startPrompt();
+
+              }else{
+                  //list item information for user for confirm prompt
+                      console.log("===================================");
+                      console.log("Awesome! We can fulfull your order.");
+                      console.log("===================================");
+                      console.log("You've selected:");
+                      console.log("----------------");
+                      console.log("Item: " + res[i].product_name);
+                      console.log("Department: " + res[i].department_name);
+                      console.log("Price: " + res[i].price);
+                      console.log("===================================");
+
+                  var newStock = (res[i].stock_quantity - userPurchase.inputNumber);
+                  var purchaseId = (userPurchase.inputId);
+                  //console.log(newStock);
+                  confirmPrompt(newStock, purchaseId);
+            }
+          }
         });
-    }
+    });
+  }
+
+    //=================================Confirm Purchase===============================
+
+      function confirmPrompt(newStock, purchaseId) {
+
+          inquirer.prompt([{
+
+              type: "confirm",
+              name: "confirmPurchase",
+              message: "Are you sure you would like to purchase this item and quantity?",
+              default: true
+
+          }]).then(function(userConfirm) {
+            if(userConfirm.confirmPurchase === true){
+
+            //if user confirms purchase, update mysql database with new stock quantity by subtracting user quantity purchased.
+
+              connection.query("UPDATE products SET ? WHERE ?", [{
+                stock_quantity: newStock
+              }, {
+                item_id: purchaseId
+              }], function(err, res) {});
+
+              console.log("=================================");
+              console.log("Transaction completed. Thank you.");
+              console.log("=================================");
+              startPrompt();
+            }else{
+              console.log("=================================");
+              console.log("No worries. Maybe next time!");
+              console.log("=================================");
+              startPrompt();
+            }
+          });
+        }
