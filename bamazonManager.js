@@ -120,15 +120,14 @@ function lowInventory() {
                     table.push(
                         [itemId, productName, departmentName, price, stockQuantity]
                     );
-
-                    console.log("");
-                    console.log("============================================= Low Bamazon Inventory (5 or Less in Stock) ===============================================");
-                    console.log("");
-                    console.log(table.toString());
-                    console.log("");
-                    startPrompt();
                 }
             }
+            console.log("");
+            console.log("============================================= Low Bamazon Inventory (5 or Less in Stock) ===============================================");
+            console.log("");
+            console.log(table.toString());
+            console.log("");
+            startPrompt();
         });
     }
 }
@@ -152,9 +151,55 @@ function addInventory() {
     ]).then(function(managerAdd) {
 
         connection.query("UPDATE products SET ? WHERE ?", [{
-            stock_quantity: managerAdd.inputNumber
+
+            stock_quantity: "stock_quantity" + managerAdd.inputNumber
         }, {
             item_id: managerAdd.inputId
-        }], function(err, res) {});
+        }], function(err, res) {
+        });
+
+        startPrompt();
     });
 }
+
+//=================================Add New Product===============================
+
+function addProduct() {
+
+//ask user to fill in all necessary information to fill columns in table
+
+    inquirer.prompt([{
+
+            type: "input",
+            name: "inputName",
+            message: "Please enter the item name of the new product.",
+        },
+        {
+            type: "input",
+            name: "inputDepartment",
+            message: "Please enter which department name of which the new product belongs.",
+        },
+        {
+            type: "input",
+            name: "inputPrice",
+            message: "Please enter the price of the new product (0.00).",
+        },
+        {
+            type: "input",
+            name: "inputStock",
+            message: "Please enter the stock quantity of the new product.",
+        }
+
+    ]).then(function(managerNew) {
+
+      //connect to database, insert column data with input from user
+
+      connection.query("INSERT INTO products SET ?", {
+        product_name: managerNew.inputName,
+        department_name: managerNew.inputDepartment,
+        price: managerNew.inputPrice,
+        stock_quantity: managerNew.inputStock
+      }, function(err, res) {});
+      startPrompt();
+    });
+  }
