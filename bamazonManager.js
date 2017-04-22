@@ -145,22 +145,22 @@ function addInventory() {
         {
             type: "input",
             name: "inputNumber",
-            message: "How many units of this item would you like to add to the in-store stock quantity?",
+            message: "How many units of this item would you like to have in the in-store stock quantity?",
 
         }
     ]).then(function(managerAdd) {
 
-        connection.query("UPDATE products SET ? WHERE ?", [{
+              connection.query("UPDATE products SET ? WHERE ?", [{
 
-            stock_quantity: "stock_quantity" + managerAdd.inputNumber
-        }, {
-            item_id: managerAdd.inputId
-        }], function(err, res) {
+                  stock_quantity: managerAdd.inputNumber
+              }, {
+                  item_id: managerAdd.inputId
+              }], function(err, res) {
+              });
+          startPrompt();
         });
+      }
 
-        startPrompt();
-    });
-}
 
 //=================================Add New Product===============================
 
