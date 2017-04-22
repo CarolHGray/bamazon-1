@@ -7,4 +7,8 @@ Within the customer portal, you can view the inventory, choose an item you'd lik
 
 Within the manager portal, you can view all inventory in the store, view all low inventory (less than 5 items in stock), choose to up the inventory back to the correct amount needed, and even add new items to your inventory! 
 
+View a demo of the working app here:
+
+https://www.youtube.com/watch?v=IPQ8tBgZr3g&feature=youtu.be
+
 Happy shopping!
