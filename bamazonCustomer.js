@@ -144,6 +144,9 @@ function selectionPrompt() {
                     console.log("Item: " + res[i].product_name);
                     console.log("Department: " + res[i].department_name);
                     console.log("Price: " + res[i].price);
+                    console.log("Quantity: " + userPurchase.inputNumber);
+                    console.log("----------------");
+                    console.log("Total: " + res[i].price * userPurchase.inputNumber);
                     console.log("===================================");
 
                     var newStock = (res[i].stock_quantity - userPurchase.inputNumber);
