@@ -59,7 +59,6 @@ Happy Contributing!
 ```
 * MySQL
 * Node.JS
-* Handlebars
 * JavaScript
 
 ```
